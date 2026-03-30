@@ -1,0 +1,13 @@
+CPPSRCS = \
+	main.cpp \
+	my_application.cpp \
+	my_camera.cpp \
+	my_device.cpp \
+	my_game_object.cpp \
+	my_keyboard_controller.cpp \
+	my_model.cpp \
+	my_pipeline.cpp \
+	my_renderer.cpp \
+	my_simple_render_factory.cpp \
+	my_swap_chain.cpp \
+	my_window.cpp
