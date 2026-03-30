@@ -3,7 +3,7 @@
 A Vulkan-based 3D viewer implementing professional camera navigation interactions — Fit All, Rotate, Pan, Zoom, and Twist — similar to those found in industry-standard 3D applications.
 
 <p align="center">
-  <img src="assets/teaser.gif" width="560">
+  <img src="assets/preview.gif" width="560">
 </p>
 
 ---
