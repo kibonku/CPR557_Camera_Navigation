@@ -51,20 +51,33 @@ Translates the camera in the screen X/Y plane. Pan speed scales proportionally w
 Dollies the camera along the view −Z axis. Speed is proportional to the current camera distance so zooming feels smooth whether the camera is far away or very close to the model.
 
 ### Phase 5 — Twist (`_twist`)
-Rotates the camera around the screen Z axis (roll). Horizontal mouse drag maps directly to roll angle, allowing the view to be twisted without affecting the pan or zoom state.
+Rotates the camera around the screen Z axis (roll). Both horizontal and vertical mouse drag contribute to the roll angle, allowing the view to be twisted without affecting the pan or zoom state.
 
-### Phase 6 — Creativity: Isometric Projection Toggle
+### Phase 6 — Creativity
+
+#### Scene Graph with Union Bounding Box
+Two teapot instances are loaded into the scene graph at different positions. The scene bounding box is computed as the union AABB across all objects — each object's local bounding box is transformed by its world translation and merged into a single `sceneMin`/`sceneMax`. This is passed to the camera so that Fit All, Rotate, and Twist all pivot correctly around the true center of the entire scene, not just a single object.
+
+#### Isometric Projection Toggle
 Pressing `O` switches between **Perspective** and **Orthographic** projection. When switching to Orthographic mode, the camera automatically transitions to the classic **isometric viewpoint** (45° around Y, 35.264° around X), placing the camera equally along all three axes. This lets you compare the same geometry in both projection modes — orthographic removes perspective distortion while perspective conveys depth.
-
 ---
 
 ## Matrix Composition Design
 
-All interactive operations share the same 5-matrix update formula inside `setMotion()`:
+Rotate and Twist apply rotation around the scene bounding-box center:
 
 ```
-new_view = translateOnly * center * rotateOnly * centerInverse * old_view
+new_view = center * rotateOnly * centerInverse * old_view
 ```
+
+Pan and Zoom apply translation directly in camera space:
+
+```
+new_view = translateOnly * old_view
+```
+
+`setMotion()` selects between the two based on the current mode. For Rotate/Twist, `rotateOnly` is extracted from `m_m4TempTransform` (translation zeroed out). For Pan/Zoom, `translateOnly` is extracted (identity rotation). This ensures rotations always pivot around the scene center, and translations are applied cleanly in camera space.
+
 
 | Matrix | Role |
 |--------|------|
