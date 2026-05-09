@@ -237,13 +237,8 @@ void MyModel::Builder::loadModel(const std::string& filepath, glm::vec3& min, gl
 	// and need to implement == operator in MyModel::Vertex
 	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
-	// Assigment: get min and max out of obj
-	float fmin = std::numeric_limits<float>::min();
-	float fmax = std::numeric_limits<float>::max();
-
-	// Initialize min max variables
-	min = glm::vec3(fmax, fmax, fmax);
-	max = glm::vec3(fmin, fmin, fmin);
+	min = glm::vec3( std::numeric_limits<float>::max());
+	max = glm::vec3(-std::numeric_limits<float>::max());
 
 	for (const auto& shape : shapes)
 	{

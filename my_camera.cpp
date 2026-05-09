@@ -210,7 +210,8 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
 
     /* Step 3: Professor's Feedback: Issue with Matrix Multiplication Order in setMotion  */ 
     // m_m4ViewMatrix = translateOnly * centerMat * rotateOnly * centerInverseMat * m_m4ViewMatrix;
-    // To fix the above line, we should apply the rotation first, then the translation:
+    // Fix: separate rotate and translate cases to avoid incorrect interaction
+    // between the pan/zoom translation and the rotation pivot.
     glm::mat4 T;
     if (m_eMode == MYCAMERA_ROTATE || m_eMode == MYCAMERA_TWIST) {
         T = centerMat * rotateOnly * centerInverseMat;

@@ -73,23 +73,23 @@ void MyApplication::_loadGameObjects()
     // Object 1: teapot at origin
     glm::vec3 min, max;
     auto model1 = MyModel::createModelFromFile(m_myDevice, "models/teapot.obj", min, max);
-    std::cout << "Teapot bbox X: " << min.x << " to " << max.x << std::endl;  
+    std::cout << "Teapot bbox X: " << min.x << " to " << max.x << std::endl;
     auto teapot1 = MyGameObject::createGameObject();
-    teapot1.model = std::move(model1);
     teapot1.transform.translation = glm::vec3{0.0f, 0.0f, 0.0f};
     teapot1.transform.scale       = glm::vec3{1.0f, 1.0f, 1.0f};
-    sceneMin = glm::min(sceneMin, min + teapot1.transform.translation);
-    sceneMax = glm::max(sceneMax, max + teapot1.transform.translation);
+    sceneMin = glm::min(sceneMin, model1->getBoundingBoxMin() + teapot1.transform.translation);
+    sceneMax = glm::max(sceneMax, model1->getBoundingBoxMax() + teapot1.transform.translation);
+    teapot1.model = std::move(model1);  // move after bbox is used
     m_vMyGameObjects.push_back(std::move(teapot1));
 
     // Object 2: teapot offset to the right
     auto model2 = MyModel::createModelFromFile(m_myDevice, "models/teapot.obj", min, max);
     auto teapot2 = MyGameObject::createGameObject();
-    teapot2.model = std::move(model2);
     teapot2.transform.translation = glm::vec3{10.0f, 0.0f, 0.0f};
     teapot2.transform.scale       = glm::vec3{1.0f, 1.0f, 1.0f};
-    sceneMin = glm::min(sceneMin, min + teapot2.transform.translation);
-    sceneMax = glm::max(sceneMax, max + teapot2.transform.translation);
+    sceneMin = glm::min(sceneMin, model2->getBoundingBoxMin() + teapot2.transform.translation);
+    sceneMax = glm::max(sceneMax, model2->getBoundingBoxMax() + teapot2.transform.translation);
+    teapot2.model = std::move(model2);  // move after bbox is used
     m_vMyGameObjects.push_back(std::move(teapot2));
 
     // Pass union bbox to camera
