@@ -56,7 +56,11 @@ std::unique_ptr<MyModel> MyModel::createModelFromFile(
 {
 	Builder builder{};
 	builder.loadModel(filepath, min, max);
-	return std::make_unique<MyModel>(device, builder);
+
+	auto model = std::make_unique<MyModel>(device, builder);
+	model->m_vMin = min;   
+    model->m_vMax = max;   
+	return model;
 }
 
 void MyModel::_createVertexBuffer(const std::vector<Vertex>& vertices, bool bUseIndexBuffer)

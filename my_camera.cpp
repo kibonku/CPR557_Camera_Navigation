@@ -208,8 +208,16 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
     centerInverseMat[3][1] = -center.y;
     centerInverseMat[3][2] = -center.z;
 
-    // Step 3 + combine: m5 * m4 * m3 * m2 * m1
-    m_m4ViewMatrix = translateOnly * centerMat * rotateOnly * centerInverseMat * m_m4ViewMatrix;
+    /* Step 3: Professor's Feedback: Issue with Matrix Multiplication Order in setMotion  */ 
+    // m_m4ViewMatrix = translateOnly * centerMat * rotateOnly * centerInverseMat * m_m4ViewMatrix;
+    // To fix the above line, we should apply the rotation first, then the translation:
+    glm::mat4 T;
+    if (m_eMode == MYCAMERA_ROTATE || m_eMode == MYCAMERA_TWIST) {
+        T = centerMat * rotateOnly * centerInverseMat;
+    } else {
+        T = translateOnly;
+    }
+    m_m4ViewMatrix = T * m_m4ViewMatrix;
 
     m_vPrevPos = m_vCurrPos;
 }
@@ -300,13 +308,15 @@ void MyCamera::_atRotate(float x, float y, float z, float angle)
 }
 
 // ---------------------------------------------------------------------------
-// _twist — rotate the camera around the screen Z axis
+// _twist - rotate the camera around the screen Z axis
+// Professor's Feedback: Issue 2: Twist only responds to X movement
 // ---------------------------------------------------------------------------
 void MyCamera::_twist(float dx, float dy)
 {
     m_m4TempTransform = glm::mat4{ 1.0f };
 
-    float delta_theta = dx * 7.0f;
+    // float delta_theta = dx * 7.0f;  // only dx, dy is ignored
+    float delta_theta = (dx + dy) * 0.5f * 7.0f;  // Corrected.
 
     glm::vec3 sx, sy, sz;
     _getScreenXYZ(sx, sy, sz);
@@ -314,8 +324,9 @@ void MyCamera::_twist(float dx, float dy)
     _atRotate(sz.x, sz.y, sz.z, delta_theta);
 }
 
+
 // ---------------------------------------------------------------------------
-// _fitAll — frame the entire scene in the view
+// _fitAll - frame the entire scene in the view
 // ---------------------------------------------------------------------------
 void MyCamera::_fitAll()
 {

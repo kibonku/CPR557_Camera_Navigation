@@ -67,21 +67,33 @@ void MyApplication::switchProjectionMatrix()
 
 void MyApplication::_loadGameObjects()
 {
-    // 1. Load the teapot model and get its bounding box
-    glm::vec3 sceneMin, sceneMax;
-    auto model = MyModel::createModelFromFile(m_myDevice, "models/teapot.obj", sceneMin, sceneMax);
+    glm::vec3 sceneMin( 1e30f,  1e30f,  1e30f);
+    glm::vec3 sceneMax(-1e30f, -1e30f, -1e30f);
 
-    // 2. Create a game object and attach the model
-    auto teapot = MyGameObject::createGameObject();
-    teapot.model = std::move(model);
-    teapot.transform.translation = glm::vec3{ 0.0f, 0.0f, 0.0f };
-    teapot.transform.scale       = glm::vec3{ 1.0f, 1.0f, 1.0f };
-    m_vMyGameObjects.push_back(std::move(teapot));
+    // Object 1: teapot at origin
+    glm::vec3 min, max;
+    auto model1 = MyModel::createModelFromFile(m_myDevice, "models/teapot.obj", min, max);
+    std::cout << "Teapot bbox X: " << min.x << " to " << max.x << std::endl;  
+    auto teapot1 = MyGameObject::createGameObject();
+    teapot1.model = std::move(model1);
+    teapot1.transform.translation = glm::vec3{0.0f, 0.0f, 0.0f};
+    teapot1.transform.scale       = glm::vec3{1.0f, 1.0f, 1.0f};
+    sceneMin = glm::min(sceneMin, min + teapot1.transform.translation);
+    sceneMax = glm::max(sceneMax, max + teapot1.transform.translation);
+    m_vMyGameObjects.push_back(std::move(teapot1));
 
-    // 3. Tell the camera about the scene bounds
+    // Object 2: teapot offset to the right
+    auto model2 = MyModel::createModelFromFile(m_myDevice, "models/teapot.obj", min, max);
+    auto teapot2 = MyGameObject::createGameObject();
+    teapot2.model = std::move(model2);
+    teapot2.transform.translation = glm::vec3{10.0f, 0.0f, 0.0f};
+    teapot2.transform.scale       = glm::vec3{1.0f, 1.0f, 1.0f};
+    sceneMin = glm::min(sceneMin, min + teapot2.transform.translation);
+    sceneMax = glm::max(sceneMax, max + teapot2.transform.translation);
+    m_vMyGameObjects.push_back(std::move(teapot2));
+
+    // Pass union bbox to camera
     m_myCamera.setSceneMinMax(sceneMin, sceneMax);
-
-    // 4. Call Fit All to set the initial camera position
     m_myCamera.setMode(MyCamera::MYCAMERA_FITALL);
 }
 

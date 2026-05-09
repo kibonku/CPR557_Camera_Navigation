@@ -58,6 +58,11 @@ public:
 	void bind(VkCommandBuffer commandBuffer);
 	void draw(VkCommandBuffer commandBuffer);
 
+	// Getters for bounding box min and max points of the model for use in MyCamera::setSceneMinMax 
+	glm::vec3 getBoundingBoxMin() const { return m_vMin; }
+	glm::vec3 getBoundingBoxMax() const { return m_vMax; }
+
+
 private:
 
 	void _createVertexBuffer(const std::vector<Vertex>& vertices, bool bUseIndexBuffer = false);
@@ -72,6 +77,9 @@ private:
 	VkBuffer       m_vkIndexBuffer;
 	VkDeviceMemory m_vkIndexBufferMemory;
 	uint32_t       m_iIndexCount;
+
+	glm::vec3 m_vMin;
+	glm::vec3 m_vMax;
 };
 
 #endif
